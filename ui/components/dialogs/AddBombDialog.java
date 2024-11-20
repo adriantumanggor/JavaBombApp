@@ -33,6 +33,7 @@ public class AddBombDialog extends JDialog {
         initializeUI();
     }
 
+    @SuppressWarnings("unused")
     private void initializeUI() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -123,6 +124,7 @@ public class AddBombDialog extends JDialog {
         panel.add(component, gbc);
     }
 
+    @SuppressWarnings("unused")
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton cancelButton = new JButton("Cancel");
