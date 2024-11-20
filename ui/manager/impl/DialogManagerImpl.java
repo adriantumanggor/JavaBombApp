@@ -109,9 +109,9 @@ public class DialogManagerImpl implements IDialogManager {
     public void showCountdownDialog(String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
             CountdownDialog dialog = new CountdownDialog(parentFrame, bombService, bombId, seconds);
-            dialog.setLocationRelativeTo(parentFrame);
-            dialog.startCountdown();
-            dialog.setVisible(true);
+            // dialog.setLocationRelativeTo(parentFrame);
+            // dialog.startCountdown();
+            dialog.show();
         });
     }
 }
