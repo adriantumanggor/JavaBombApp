@@ -28,7 +28,7 @@ public class ApplicationConfig {
         this.displayManager = new DisplayManagerImpl(bombService);
         this.dialogManager = new DialogManagerImpl(bombService, displayManager);
 
-        ((InMemoryBombRepository) bombRepository).addListener(() -> displayManager.refreshDisplay());
+        // ((InMemoryBombRepository) bombRepository).addListener(() -> displayManager.refreshDisplay());
     }
 
     public IBombService bombService() { return bombService; }
