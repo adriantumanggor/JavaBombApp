@@ -18,6 +18,7 @@ public class ButtonPanel extends JPanel {
         initializeButtons();
     }
 
+    @SuppressWarnings("unused")
     private void initializeButtons() {
         JButton addButton = new JButton("Add Bomb");
         JButton editButton = new JButton("Edit Bomb");

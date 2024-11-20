@@ -23,27 +23,9 @@ public class HistoryPanel extends JPanel {
         historyList.setCellRenderer(new HistoryListCellRenderer());
 
         add(new JScrollPane(historyList), BorderLayout.CENTER);
-        // add(createClearButton(), BorderLayout.SOUTH);
         
         updateDisplay();
     }
-
-    // private JButton createClearButton() {
-    //     JButton clearButton = new JButton("Clear History");
-    //     clearButton.addActionListener(e -> {
-    //         int result = JOptionPane.showConfirmDialog(
-    //             this,
-    //             "Are you sure you want to clear the history?",
-    //             "Confirm Clear",
-    //             JOptionPane.YES_NO_OPTION
-    //         );
-    //         if (result == JOptionPane.YES_OPTION) {
-    //             bombService.clearHistory();
-    //             updateDisplay();
-    //         }
-    //     });
-    //     return clearButton;
-    // }
 
     public void updateDisplay() {
         SwingUtilities.invokeLater(() -> {
