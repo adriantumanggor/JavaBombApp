@@ -13,18 +13,25 @@ public class ApplicationConfig {
     private final IBombService bombService;
     private final IDisplayManager displayManager;
     private final IDialogManager dialogManager;
+    // private final EventBus eventBus;
+
 
     public ApplicationConfig() {
+        // this.eventBus = new EventBus();
+
         // Initialize repositories
         this.bombRepository = new InMemoryBombRepository();
         this.historyRepository = new InMemoryHistoryRepository();
         
         // Initialize service
         this.bombService = new BombServiceImpl(bombRepository, historyRepository);
+
         
         // Initialize UI managers
         this.displayManager = new DisplayManagerImpl(bombService);
         this.dialogManager = new DialogManagerImpl(bombService);
+
+        ((InMemoryBombRepository) bombRepository).addListener(() -> displayManager.refreshDisplay());
     }
 
     public IBombService bombService() { return bombService; }

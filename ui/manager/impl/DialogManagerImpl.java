@@ -1,11 +1,9 @@
 package ui.manager.impl;
 
 import domain.bomb.*;
-import domain.value.Duration;
 import service.IBombService;
 import ui.components.dialogs.*;
 import ui.manager.IDialogManager;
-import ui.manager.IDisplayManager;
 
 import javax.swing.*;
 import java.awt.*;

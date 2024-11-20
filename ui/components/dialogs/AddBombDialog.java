@@ -150,6 +150,7 @@ public class AddBombDialog extends JDialog {
             };
 
             bombService.addBomb(bomb);
+            
             dispose();
             
         } catch (Exception ex) {

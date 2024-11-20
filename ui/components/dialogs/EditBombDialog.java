@@ -152,7 +152,6 @@ public class EditBombDialog extends JDialog {
                 case REMOTE -> updateRemoteBomb((RemoteBomb) bomb);
             }
 
-            bombService.updateBomb(bomb); // This updates the existing bomb
             dispose();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
