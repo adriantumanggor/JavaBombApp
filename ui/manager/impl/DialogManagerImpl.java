@@ -1,6 +1,8 @@
 package ui.manager.impl;
 
 import domain.bomb.Bomb;
+import domain.bomb.BombType;
+import domain.bomb.TimedBomb;
 import service.IBombService;
 import ui.components.dialogs.*;
 import ui.manager.IDialogManager;
@@ -13,7 +15,7 @@ import java.util.Optional;
 
 public class DialogManagerImpl implements IDialogManager {
     private final IBombService bombService;
-    private final IDisplayManager displayManager; // Reference to DisplayManager
+    private final IDisplayManager displayManager; 
     private final JFrame parentFrame;
 
     public DialogManagerImpl(IBombService bombService, IDisplayManager displayManager) {
@@ -78,24 +80,37 @@ public class DialogManagerImpl implements IDialogManager {
         SwingUtilities.invokeLater(() -> {
             Optional<Bomb> selectedBomb = displayManager.getBombListPanel().getSelectedBomb();
             if (selectedBomb.isPresent()) {
-                int confirm = JOptionPane.showConfirmDialog(parentFrame, 
-                        "Are you sure you want to explode this bomb?", 
-                        "Confirm Explosion", JOptionPane.YES_NO_OPTION);
+                Bomb bomb = selectedBomb.get();
+    
+                int confirm = JOptionPane.showConfirmDialog(
+                    parentFrame,
+                    "Are you sure you want to explode this bomb?",
+                    "Confirm Explosion",
+                    JOptionPane.YES_NO_OPTION
+                );
+    
                 if (confirm == JOptionPane.YES_OPTION) {
-                    bombService.explodeBomb(selectedBomb.get().getId());
-                    displayManager.refreshDisplay(); // Refresh after explosion
+                    if (bomb instanceof TimedBomb timedBomb) {
+                        // Show countdown dialog for timed bombs
+                        showCountdownDialog(timedBomb.getId(), timedBomb.getDuration().seconds());
+                    } else {
+                        // Immediately explode non-timed bombs
+                        bombService.explodeBomb(bomb.getId());
+                        displayManager.refreshDisplay(); // Refresh after explosion
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(parentFrame, "Please select a bomb to explode.", "No Bomb Selected", JOptionPane.WARNING_MESSAGE);
             }
         });
     }
-
+    
     @Override
     public void showCountdownDialog(String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
             CountdownDialog dialog = new CountdownDialog(parentFrame, bombService, bombId, seconds);
             dialog.setLocationRelativeTo(parentFrame);
+            dialog.startCountdown();
             dialog.setVisible(true);
         });
     }

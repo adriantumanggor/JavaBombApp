@@ -18,11 +18,25 @@ public abstract class Bomb {
         this.active = false;
     }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getLocation() { return location; }
-    public boolean isActive() { return active; }
-    public BombType getType() { return type; }
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public BombType getType() {
+        return type;
+    }
 
     public void setName(String name) {
         this.name = Objects.requireNonNull(name, "Name cannot be null");

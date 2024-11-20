@@ -1,5 +1,7 @@
 package ui.manager;
 
+import domain.value.*;;
+
 public interface IDialogManager {
     void showAddBombDialog();
     void showEditBombDialog();
