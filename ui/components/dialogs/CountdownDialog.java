@@ -1,8 +1,12 @@
 package ui.components.dialogs;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.sql.Time;
+
 import javax.swing.*;
+
+import domain.bomb.TimedBomb;
+import service.IBombService;
 
 public class CountdownDialog {
     private final JDialog dialog;
@@ -13,8 +17,14 @@ public class CountdownDialog {
     private final JLabel countdownLabel;
     private final JLabel warningLabel;
     private final JButton cancelButton;
+    private final IBombService bombService;
+    private final TimedBomb timedBomb;
 
-    public CountdownDialog(JFrame parent, int seconds) {
+
+    public CountdownDialog(TimedBomb timedBomb, JFrame parent, IBombService bombService, int seconds) {
+        this.timedBomb = timedBomb;
+        this.remainingSeconds = seconds;
+        this.bombService = bombService;
         this.remainingSeconds = seconds;
 
         // Initialize dialog
@@ -144,10 +154,19 @@ public class CountdownDialog {
             if (frame[0] >= 15) {
                 ((Timer) e.getSource()).stop();
                 explosionDialog.dispose();
-                JOptionPane.showMessageDialog(dialog, "Explosion completed!", "Explosion", JOptionPane.INFORMATION_MESSAGE);
+                showExplosionDescription();
             }
         });
         return timer;
+    }
+
+    private void showExplosionDescription() {
+        JOptionPane.showMessageDialog(
+            dialog,
+            String.format("%s %s exploded in %s", timedBomb.getType(), timedBomb.getName(), timedBomb.getLocation()),
+            "Explosion Details",
+            JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private String formatTime(int seconds) {

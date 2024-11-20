@@ -1,6 +1,6 @@
 package ui.manager;
 
-import domain.value.*;;
+import domain.bomb.TimedBomb;
 
 public interface IDialogManager {
     void showAddBombDialog();
@@ -8,5 +8,5 @@ public interface IDialogManager {
     void activateSelectedBomb();
     void deactivateSelectedBomb();
     void explodeSelectedBomb();
-    void showCountdownDialog(String bombId, int seconds);
+    void showCountdownDialog(TimedBomb timedBomb, String bombId, int seconds);
 }

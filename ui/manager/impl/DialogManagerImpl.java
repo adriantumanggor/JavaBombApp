@@ -97,7 +97,7 @@ public class DialogManagerImpl implements IDialogManager {
     
                 if (confirm == JOptionPane.YES_OPTION) {
                     if (bomb instanceof TimedBomb timedBomb) {
-                        showCountdownDialog(timedBomb.getId(), timedBomb.getDuration().seconds());
+                        showCountdownDialog(timedBomb, timedBomb.getId(), timedBomb.getDuration().seconds());
                     } else if (bomb instanceof SmokeBomb smokeBomb) {
                         showSmokeRadiusDialog(smokeBomb.getId(), smokeBomb.getRadius());
                     } else if (bomb instanceof RemoteBomb remoteBomb) {
@@ -216,9 +216,9 @@ public class DialogManagerImpl implements IDialogManager {
     
 
     @Override
-    public void showCountdownDialog(String bombId, int seconds) {
+    public void showCountdownDialog(TimedBomb timedBomb, String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
-            CountdownDialog dialog = new CountdownDialog(parentFrame, seconds);
+            CountdownDialog dialog = new CountdownDialog(timedBomb, parentFrame, bombService, seconds);
             dialog.start();
         });
     }
