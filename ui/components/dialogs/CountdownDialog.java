@@ -4,178 +4,160 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-import service.IBombService;
-
 public class CountdownDialog {
     private final JDialog dialog;
-    private final IBombService bombService;
-    private final String bombId;
-    private final int initialSeconds;
+    private final Timer countdownTimer;
+    private final Timer blinkTimer;
     private int remainingSeconds;
-    private final JFrame parent;
+    private final JProgressBar progressBar;
+    private final JLabel countdownLabel;
+    private final JLabel warningLabel;
+    private final JButton cancelButton;
 
-    public CountdownDialog(JFrame parent, IBombService bombService, String bombId, int seconds) {
-        this.parent = parent;
-        this.bombService = bombService;
-        this.bombId = bombId;
-        this.initialSeconds = seconds;
+    public CountdownDialog(JFrame parent, int seconds) {
         this.remainingSeconds = seconds;
-        this.dialog = createDialog();
+
+        // Initialize dialog
+        this.dialog = new JDialog(parent, "Countdown", true);
+        this.dialog.setSize(400, 300);
+        this.dialog.setLocationRelativeTo(parent);
+        this.dialog.setLayout(new BorderLayout());
+
+        // Countdown label
+        this.countdownLabel = new JLabel(formatTime(remainingSeconds), SwingConstants.CENTER);
+        this.countdownLabel.setFont(new Font("Digital-7", Font.BOLD, 72));
+        this.countdownLabel.setForeground(Color.RED);
+
+        // Warning label
+        this.warningLabel = new JLabel("Countdown in progress...", SwingConstants.CENTER);
+        this.warningLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        this.warningLabel.setForeground(Color.YELLOW);
+
+        // Progress bar
+        this.progressBar = new JProgressBar(0, seconds);
+        this.progressBar.setStringPainted(true);
+        this.progressBar.setForeground(Color.RED);
+        this.progressBar.setBackground(Color.DARK_GRAY);
+
+        // Cancel button
+        this.cancelButton = new JButton("Cancel Countdown");
+        this.cancelButton.addActionListener(e -> cancelCountdown());
+
+        // Layout
+        JPanel countdownPanel = createCountdownPanel();
+        JPanel buttonPanel = createButtonPanel();
+
+        this.dialog.add(countdownPanel, BorderLayout.CENTER);
+        this.dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Timers
+        this.blinkTimer = new Timer(500, e -> toggleWarningLabelVisibility());
+        this.countdownTimer = createCountdownTimer();
     }
 
-    private JDialog createDialog() {
-        JPanel mainPanel = createMainPanel();
-        JDialog dialog = new JDialog(parent, "Countdown Bomb: " + bombId, true);
-        dialog.setSize(400, 300);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setLayout(new BorderLayout());
-        dialog.add(mainPanel);
-        return dialog;
+    private JPanel createCountdownPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.BLACK);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        panel.add(countdownLabel, BorderLayout.CENTER);
+        panel.add(warningLabel, BorderLayout.NORTH);
+        panel.add(progressBar, BorderLayout.SOUTH);
+
+        return panel;
     }
 
-    private JPanel createMainPanel() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JLabel countdownLabel = createCountdownLabel();
-        JLabel infoLabel = createInfoLabel();
-        JProgressBar progressBar = createProgressBar();
-
-        mainPanel.add(createCountdownPanel(countdownLabel), BorderLayout.CENTER);
-        mainPanel.add(createInfoPanel(infoLabel), BorderLayout.NORTH);
-        mainPanel.add(progressBar, BorderLayout.SOUTH);
-
-        startCountdown(countdownLabel, infoLabel, progressBar);
-
-        return mainPanel;
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel.add(cancelButton);
+        return panel;
     }
 
-    private JLabel createCountdownLabel() {
-        JLabel countdownLabel = new JLabel("", SwingConstants.CENTER);
-        countdownLabel.setFont(new Font("Digital-7", Font.BOLD, 72));
-        countdownLabel.setForeground(Color.RED);
-        return countdownLabel;
-    }
+    private Timer createCountdownTimer() {
+        return new Timer(1000, e -> {
+            remainingSeconds--;
+            countdownLabel.setText(formatTime(remainingSeconds));
+            progressBar.setValue(progressBar.getMaximum() - remainingSeconds);
 
-    private JLabel createInfoLabel() {
-        JLabel infoLabel = new JLabel("The bomb is active!", SwingConstants.CENTER);
-        infoLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        infoLabel.setForeground(Color.YELLOW);
-        return infoLabel;
-    }
+            if (remainingSeconds <= 5) {
+                handleWarningPhase();
+            }
 
-    private JProgressBar createProgressBar() {
-        JProgressBar progressBar = new JProgressBar(0, initialSeconds);
-        progressBar.setStringPainted(true);
-        progressBar.setForeground(Color.RED);
-        progressBar.setBackground(Color.DARK_GRAY);
-        progressBar.setBorderPainted(false);
-        return progressBar;
-    }
-
-    private JPanel createCountdownPanel(JLabel countdownLabel) {
-        JPanel countdownPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        countdownPanel.setBackground(Color.BLACK);
-        countdownPanel.add(countdownLabel);
-        return countdownPanel;
-    }
-
-    private JPanel createInfoPanel(JLabel infoLabel) {
-        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        infoPanel.setBackground(Color.BLACK);
-        infoPanel.add(infoLabel);
-        return infoPanel;
-    }
-
-    private void startCountdown(JLabel countdownLabel, JLabel infoLabel, JProgressBar progressBar) {
-        Timer blinkTimer = new Timer(500, e -> countdownLabel.setVisible(!countdownLabel.isVisible()));
-        Timer countdownTimer = createCountdownTimer(countdownLabel, infoLabel, progressBar, blinkTimer);
-
-        countdownLabel.setText(formatTime(remainingSeconds));
-        progressBar.setValue(0);
-
-        countdownTimer.start();
-    }
-
-    private Timer createCountdownTimer(JLabel countdownLabel, JLabel infoLabel, JProgressBar progressBar, Timer blinkTimer) {
-        return new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                remainingSeconds--;
-                countdownLabel.setText(formatTime(remainingSeconds));
-                progressBar.setValue(initialSeconds - remainingSeconds);
-
-                if (remainingSeconds <= 5) {
-                    handleWarningPhase(infoLabel, blinkTimer);
-                }
-
-                if (remainingSeconds <= 0) {
-                    ((Timer) e.getSource()).stop();
-                    handleExplosion(blinkTimer);
-                }
+            if (remainingSeconds <= 0) {
+                handleCountdownComplete();
             }
         });
     }
 
-    private void handleWarningPhase(JLabel infoLabel, Timer blinkTimer) {
-        infoLabel.setText("WARNING: The bomb will explode soon!");
-        infoLabel.setForeground(Color.RED);
+    private void handleWarningPhase() {
+        warningLabel.setText("WARNING: Explosion imminent!");
+        warningLabel.setForeground(Color.RED);
         if (!blinkTimer.isRunning()) {
             blinkTimer.start();
         }
     }
 
-    private void handleExplosion(Timer blinkTimer) {
+    private void handleCountdownComplete() {
+        countdownTimer.stop();
         blinkTimer.stop();
         dialog.dispose();
         showExplosionEffect();
     }
 
+    private void cancelCountdown() {
+        countdownTimer.stop();
+        blinkTimer.stop();
+        dialog.dispose();
+    }
+
+    private void toggleWarningLabelVisibility() {
+        warningLabel.setVisible(!warningLabel.isVisible());
+    }
+
     private void showExplosionEffect() {
-        JDialog explosionDialog = new JDialog(parent, false);
+        JDialog explosionDialog = new JDialog(dialog, false);
         explosionDialog.setUndecorated(true);
         explosionDialog.setSize(400, 300);
-        explosionDialog.setLocationRelativeTo(parent);
+        explosionDialog.setLocationRelativeTo(dialog);
 
-        JPanel explosionPanel = new JPanel(new BorderLayout());
-        explosionPanel.setBackground(Color.BLACK);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.BLACK);
 
         JLabel explosionLabel = new JLabel("BOOM!", SwingConstants.CENTER);
         explosionLabel.setFont(new Font("Arial", Font.BOLD, 72));
         explosionLabel.setForeground(Color.RED);
 
-        explosionPanel.add(explosionLabel, BorderLayout.CENTER);
-        explosionDialog.add(explosionPanel);
+        panel.add(explosionLabel, BorderLayout.CENTER);
+        explosionDialog.add(panel);
 
-        Timer explosionTimer = createExplosionAnimationTimer(explosionLabel, explosionDialog);
+        Timer explosionAnimationTimer = createExplosionAnimationTimer(explosionLabel, explosionDialog);
         explosionDialog.setVisible(true);
-        explosionTimer.start();
+        explosionAnimationTimer.start();
     }
 
     private Timer createExplosionAnimationTimer(JLabel explosionLabel, JDialog explosionDialog) {
         final int[] frame = {0};
         final Color[] colors = {Color.RED, Color.ORANGE, Color.YELLOW};
-        return new Timer(100, e -> {
+        Timer timer = new Timer(100, e -> {
             explosionLabel.setForeground(colors[frame[0] % colors.length]);
             frame[0]++;
             if (frame[0] >= 15) {
                 ((Timer) e.getSource()).stop();
                 explosionDialog.dispose();
-                try {
-                    bombService.explodeBomb(bombId);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(parent, "Error: " + ex.getMessage(), "Explosion Error", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(dialog, "Explosion completed!", "Explosion", JOptionPane.INFORMATION_MESSAGE);
             }
         });
+        return timer;
     }
 
     private String formatTime(int seconds) {
         return String.format("%02d:%02d", seconds / 60, seconds % 60);
     }
 
-    public void show() {
+    public void start() {
+        progressBar.setValue(0);
+        countdownLabel.setText(formatTime(remainingSeconds));
+        countdownTimer.start();
         dialog.setVisible(true);
     }
 }
