@@ -3,14 +3,13 @@
 package domain.bomb;
 
 import domain.value.Distance;
-import java.awt.Color;
 import java.util.Objects;
 
 public class SmokeBomb extends Bomb {
     private Distance radius;
 
-    public SmokeBomb(String name, Color color, Distance radius) {
-        super(name, color, BombType.SMOKE);
+    public SmokeBomb(String name, String location, Distance radius) {
+        super(name, location, BombType.SMOKE);
         setRadius(radius);
     }
 

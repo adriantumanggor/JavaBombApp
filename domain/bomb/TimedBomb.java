@@ -1,14 +1,13 @@
 package domain.bomb;
 
 import domain.value.Duration;
-import java.awt.Color;
 import java.util.Objects;
 
 public class TimedBomb extends Bomb {
     private Duration duration;
 
-    public TimedBomb(String name, Color color, Duration duration) {
-        super(name, color, BombType.TIMED);
+    public TimedBomb(String name, String location, Duration duration) {
+        super(name, location, BombType.TIMED);
         setDuration(duration);
     }
 

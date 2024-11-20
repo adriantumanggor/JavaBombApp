@@ -1,13 +1,11 @@
 // domain/bomb/RemoteBomb.java
 package domain.bomb;
 
-import java.awt.Color;
-
 public class RemoteBomb extends Bomb {
     private String frequency;
 
-    public RemoteBomb(String name, Color color, String frequency) {
-        super(name, color, BombType.REMOTE);
+    public RemoteBomb(String name, String location, String frequency) {
+        super(name, location, BombType.REMOTE);
         setFrequency(frequency);
     }
 

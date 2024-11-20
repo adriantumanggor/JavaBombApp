@@ -1,177 +1,178 @@
 package ui.manager.impl;
 
+import domain.bomb.*;
+import domain.value.Duration;
 import service.IBombService;
-import domain.bomb.BombType;
 import ui.components.dialogs.*;
 import ui.manager.IDialogManager;
+import ui.manager.IDisplayManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.*;
 
 public class DialogManagerImpl implements IDialogManager {
     private final IBombService bombService;
-    private final Window parentWindow;
-    private String selectedBombId;
-    private CountdownDialog activeCountdownDialog;
+    private final ScheduledExecutorService executorService;
+    private final JFrame parentFrame;
 
     public DialogManagerImpl(IBombService bombService) {
         this.bombService = Objects.requireNonNull(bombService);
-        this.parentWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+        this.parentFrame = (JFrame) KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+        this.executorService = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread thread = new Thread(r, "BombCountdownThread");
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     @Override
     public void showAddBombDialog() {
-        JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(parentWindow);
-        AddBombDialog dialog = new AddBombDialog(parent, bombService);
-        dialog.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            AddBombDialog dialog = new AddBombDialog(parentFrame, bombService);
+            dialog.setLocationRelativeTo(parentFrame);
+            dialog.setVisible(true);
+        });
     }
 
     @Override
     public void showEditBombDialog() {
-        if (selectedBombId == null) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Please select a bomb to edit",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(parentWindow);
-        EditBombDialog dialog = new EditBombDialog(parent, bombService, selectedBombId);
-        dialog.setVisible(true);
+        getSelectedBomb().ifPresent(bomb -> {
+            SwingUtilities.invokeLater(() -> {
+                EditBombDialog dialog = new EditBombDialog(parentFrame, bombService, bomb);
+                dialog.setLocationRelativeTo(parentFrame);
+                dialog.setVisible(true);
+            });
+        });
     }
 
     @Override
     public void activateSelectedBomb() {
-        if (selectedBombId == null) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Please select a bomb to activate",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        getSelectedBombId().ifPresent(bombId -> {
+            try {
+                bombService.activateBomb(bombId);
+                JOptionPane.showMessageDialog(
+                    parentFrame,
+                    "Bomb activated successfully!",
+                    "Activation Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
 
-        try {
-            // Get the bomb type before activation
-            Bomb selectedBomb = bombService.getAllBombs().stream()
-                .filter(b -> b.getId().equals(selectedBombId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Selected bomb not found"));
-
-            // Special handling for timed bombs
-            if (selectedBomb.getType() == BombType.TIMED) {
-                showCountdownDialog(selectedBombId, selectedBomb.getDetonationTime());
+                // If it's a timed bomb, start the countdown
+                bombService.getAllBombs().stream()
+                    .filter(bomb -> bomb.getId().equals(bombId))
+                    .filter(bomb -> bomb instanceof TimedBomb)
+                    .map(bomb -> (TimedBomb) bomb)
+                    .findFirst()
+                    .ifPresent(timedBomb -> showCountdownDialog(bombId, timedBomb.getDuration().seconds()));
+            } catch (Exception e) {
+                showErrorDialog("Failed to activate bomb", e);
             }
-
-            bombService.activateBomb(selectedBombId);
-            JOptionPane.showMessageDialog(parentWindow,
-                "Bomb activated successfully",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Failed to activate bomb: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
+        });
     }
 
     @Override
     public void deactivateSelectedBomb() {
-        if (selectedBombId == null) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Please select a bomb to deactivate",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            // If there's an active countdown, cancel it
-            if (activeCountdownDialog != null && activeCountdownDialog.isVisible()) {
-                activeCountdownDialog.dispose();
-                activeCountdownDialog = null;
+        getSelectedBombId().ifPresent(bombId -> {
+            try {
+                bombService.deactivateBomb(bombId);
+                JOptionPane.showMessageDialog(
+                    parentFrame,
+                    "Bomb deactivated successfully!",
+                    "Deactivation Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (Exception e) {
+                showErrorDialog("Failed to deactivate bomb", e);
             }
-
-            bombService.deactivateBomb(selectedBombId);
-            JOptionPane.showMessageDialog(parentWindow,
-                "Bomb deactivated successfully",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Failed to deactivate bomb: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
+        });
     }
 
     @Override
     public void explodeSelectedBomb() {
-        if (selectedBombId == null) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Please select a bomb to explode",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        getSelectedBombId().ifPresent(bombId -> {
+            try {
+                int confirmation = JOptionPane.showConfirmDialog(
+                    parentFrame,
+                    "Are you sure you want to detonate this bomb?",
+                    "Confirm Detonation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+                );
 
-        try {
-            Bomb selectedBomb = bombService.getAllBombs().stream()
-                .filter(b -> b.getId().equals(selectedBombId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Selected bomb not found"));
-
-            String confirmMessage = String.format("Are you sure you want to explode this %s?", 
-                selectedBomb.getType().getDisplayName());
-
-            int confirm = JOptionPane.showConfirmDialog(parentWindow,
-                confirmMessage,
-                "Confirm Explosion",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                // If there's an active countdown, cancel it
-                if (activeCountdownDialog != null && activeCountdownDialog.isVisible()) {
-                    activeCountdownDialog.dispose();
-                    activeCountdownDialog = null;
+                if (confirmation == JOptionPane.YES_OPTION) {
+                    bombService.explodeBomb(bombId);
+                    JOptionPane.showMessageDialog(
+                        parentFrame,
+                        "Bomb detonated successfully!",
+                        "Detonation Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
                 }
-
-                bombService.explodeBomb(selectedBombId);
-                JOptionPane.showMessageDialog(parentWindow,
-                    "Bomb exploded successfully",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                showErrorDialog("Failed to detonate bomb", e);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(parentWindow,
-                "Failed to explode bomb: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
+        });
     }
 
     @Override
-    public void showCountdownDialog(String bombId, long seconds) {
-        // If there's already an active countdown, dispose it
-        if (activeCountdownDialog != null && activeCountdownDialog.isVisible()) {
-            activeCountdownDialog.dispose();
+    public void showCountdownDialog(String bombId, int seconds) {
+        SwingUtilities.invokeLater(() -> {
+            CountdownDialog dialog = new CountdownDialog(parentFrame, bombService, bombId, seconds);
+            dialog.setLocationRelativeTo(parentFrame);
+            dialog.setVisible(true);
+
+            // Schedule the explosion
+            executorService.schedule(() -> {
+                try {
+                    if (dialog.isVisible()) {
+                        dialog.dispose();
+                    }
+                    bombService.explodeBomb(bombId);
+                    JOptionPane.showMessageDialog(
+                        parentFrame,
+                        "Timed bomb detonated!",
+                        "Detonation Complete",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                } catch (Exception e) {
+                    showErrorDialog("Failed to detonate timed bomb", e);
+                }
+            }, seconds, TimeUnit.SECONDS);
+        });
+    }
+
+    private Optional<String> getSelectedBombId() {
+        return getSelectedBomb().map(Bomb::getId);
+    }
+
+    private Optional<Bomb> getSelectedBomb() {
+        Component focused = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        if (focused instanceof JList<?>) {
+            JList<?> list = (JList<?>) focused;
+            Object selectedValue = list.getSelectedValue();
+            if (selectedValue instanceof Bomb) {
+                return Optional.of((Bomb) selectedValue);
+            }
         }
-
-        JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(parentWindow);
-        activeCountdownDialog = new CountdownDialog(parent, bombService, bombId, (int) seconds);
-        activeCountdownDialog.startCountdown();
-        activeCountdownDialog.setVisible(true);
+        
+        JOptionPane.showMessageDialog(
+            parentFrame,
+            "Please select a bomb from the list first.",
+            "No Selection",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return Optional.empty();
     }
 
-    // Method to update selected bomb ID
-    public void setSelectedBombId(String bombId) {
-        this.selectedBombId = bombId;
-    }
-
-    // Method to check if countdown is active
-    public boolean isCountdownActive() {
-        return activeCountdownDialog != null && activeCountdownDialog.isVisible();
+    private void showErrorDialog(String message, Exception e) {
+        JOptionPane.showMessageDialog(
+            parentFrame,
+            message + ": " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 }

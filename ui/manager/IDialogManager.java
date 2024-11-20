@@ -6,5 +6,5 @@ public interface IDialogManager {
     void activateSelectedBomb();
     void deactivateSelectedBomb();
     void explodeSelectedBomb();
-    void showCountdownDialog(String bombId, long seconds);
+    void showCountdownDialog(String bombId, int seconds);
 }

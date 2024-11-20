@@ -1,27 +1,26 @@
 package domain.bomb;
 
-import java.awt.Color;
 import java.util.Objects;
 import java.util.UUID;
 
 public abstract class Bomb {
     private final String id;
     private String name;
-    private Color color;
+    private String location;
     private boolean active;
     private final BombType type;
 
-    protected Bomb(String name, Color color, BombType type) {
+    protected Bomb(String name, String location, BombType type) {
         this.id = UUID.randomUUID().toString();
         setName(name);
-        setColor(color);
+        setLocation(location);
         this.type = Objects.requireNonNull(type);
         this.active = false;
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
-    public Color getColor() { return color; }
+    public String getLocation() { return location; }
     public boolean isActive() { return active; }
     public BombType getType() { return type; }
 
@@ -32,8 +31,8 @@ public abstract class Bomb {
         }
     }
 
-    public void setColor(Color color) {
-        this.color = Objects.requireNonNull(color, "Color cannot be null");
+    public void setLocation(String location) {
+        this.location = Objects.requireNonNull(location, "location cannot be null");
     }
 
     public void activate() {
