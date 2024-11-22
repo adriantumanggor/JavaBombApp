@@ -18,5 +18,4 @@ public class InMemoryHistoryRepository implements IHistoryRepository {
     public List<ExplosionRecord> getAllRecords() {
         return new ArrayList<>(records);
     }
-
 }

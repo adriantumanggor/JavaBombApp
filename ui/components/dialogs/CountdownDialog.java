@@ -20,10 +20,9 @@ public class CountdownDialog {
     private final TimedBomb timedBomb;
 
 
-    public CountdownDialog(TimedBomb timedBomb, JFrame parent, IBombService bombService, int seconds) {
+    public CountdownDialog(TimedBomb timedBomb, JFrame parent, int seconds) {
         this.timedBomb = timedBomb;
         this.remainingSeconds = seconds;
-        // this.bombService = bombService;
         this.remainingSeconds = seconds;
 
         // Initialize dialog
@@ -162,7 +161,7 @@ public class CountdownDialog {
     private void showExplosionDescription() {
         JOptionPane.showMessageDialog(
             dialog,
-            String.format("%s %s exploded in %s", timedBomb.getType(), timedBomb.getName(), timedBomb.getLocation()),
+            String.format("%s exploded in %s", timedBomb.getName(), timedBomb.getLocation()),
             "Explosion Details",
             JOptionPane.INFORMATION_MESSAGE
         );

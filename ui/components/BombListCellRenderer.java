@@ -15,7 +15,8 @@ public class BombListCellRenderer extends DefaultListCellRenderer {
 
         if (value instanceof Bomb) {
             Bomb bomb = (Bomb) value;
-            label.setText(String.format("Type: %s, Status: %s, Bomb ID: %s", bomb.getType(), bomb.isActive() ? "Active" : "Inactive",bomb.getId()));
+            label.setText(String.format("Name: %s, Type: %s, Status: %s, Bomb ID: %s", bomb.getName(), bomb.getType(),
+                    bomb.isActive() ? "Active" : "Inactive", bomb.getId()));
         } else {
             label.setText("Unknown item");
         }

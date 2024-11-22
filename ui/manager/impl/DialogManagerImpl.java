@@ -83,6 +83,16 @@ public class DialogManagerImpl implements IDialogManager {
             if (selectedBomb.isPresent()) {
                 Bomb bomb = selectedBomb.get();
 
+                // Pengecekan status aktivasi
+                if (!bomb.isActive()) {
+                    JOptionPane.showMessageDialog(
+                            parentFrame,
+                            "Bomb must be activated before it can be exploded.",
+                            "Bomb Not Activated",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 int confirm = JOptionPane.showConfirmDialog(
                         parentFrame,
                         "Are you sure you want to explode this bomb?",
@@ -115,7 +125,7 @@ public class DialogManagerImpl implements IDialogManager {
     @Override
     public void showCountdownDialog(TimedBomb timedBomb, String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
-            CountdownDialog dialog = new CountdownDialog(timedBomb, parentFrame, bombService, seconds);
+            CountdownDialog dialog = new CountdownDialog(timedBomb, parentFrame, seconds);
             dialog.start();
             displayManager.refreshDisplay();
         });
@@ -125,7 +135,8 @@ public class DialogManagerImpl implements IDialogManager {
     @Override
     public void showSmokeRadiusDialog(String bombId, int radius) {
         SwingUtilities.invokeLater(() -> {
-            SimpleInfoDialog.show(parentFrame, "Smoke Bomb:" + bombId, "Duarr ! Bom ini meledak dalam radius " + radius + " meter");
+            SimpleInfoDialog.show(parentFrame, "Smoke Bomb:" + bombId,
+                    "Duarr ! Bom ini meledak dalam radius " + radius + " meter");
         });
     }
 
@@ -133,7 +144,8 @@ public class DialogManagerImpl implements IDialogManager {
     @Override
     public void showRemoteBombDialog(String bombId, String frequency) {
         SwingUtilities.invokeLater(() -> {
-            SimpleInfoDialog.show(parentFrame, "Remote Bomb:" + bombId, "Duarr ! Bom ini meledak dalam Frekuensi " + frequency + "Hz");
+            SimpleInfoDialog.show(parentFrame, "Remote Bomb:" + bombId,
+                    "Duarr ! Bom ini meledak dalam Frekuensi " + frequency + "Hz");
         });
     }
 }

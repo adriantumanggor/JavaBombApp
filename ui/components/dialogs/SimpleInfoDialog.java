@@ -5,7 +5,6 @@ import java.awt.*;
 
 public class SimpleInfoDialog extends JDialog {
     public SimpleInfoDialog(Frame parent, String title, String message) {
-        // Call the parent constructor
         super(parent, title, true);  // modal dialog
 
         // Create the main panel
