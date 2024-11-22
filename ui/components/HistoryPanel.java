@@ -34,20 +34,4 @@ public class HistoryPanel extends JPanel {
         });
     }
 
-    private static class HistoryListCellRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(
-                JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-            if (value instanceof ExplosionRecord record) {
-                String text = String.format("[%s] %s - %s",
-                        record.bombType().getDisplayName(),
-                        record.details());
-                setText(text);
-            }
-
-            return this;
-        }
-    }
 }

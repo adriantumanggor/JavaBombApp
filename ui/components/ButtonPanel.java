@@ -20,11 +20,11 @@ public class ButtonPanel extends JPanel {
 
     @SuppressWarnings("unused")
     private void initializeButtons() {
-        JButton addButton = new JButton("Add Bomb");
+        JButton addButton = new JButton("Tambah Bomb");
         JButton editButton = new JButton("Edit Bomb");
         JButton activateButton = new JButton("Activate");
         JButton deactivateButton = new JButton("Deactivate");
-        JButton explodeButton = new JButton("EXPLODE!");
+        JButton explodeButton = new JButton("ledakkan!");
 
         addButton.addActionListener(e -> dialogManager.showAddBombDialog());
         editButton.addActionListener(e -> dialogManager.showEditBombDialog());

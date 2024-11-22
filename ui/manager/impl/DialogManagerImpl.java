@@ -1,11 +1,6 @@
 package ui.manager.impl;
 
-import domain.bomb.Bomb;
-import domain.bomb.BombType;
-import domain.bomb.RemoteBomb;
-import domain.bomb.SmokeBomb;
-import domain.bomb.TimedBomb;
-import domain.value.Distance;
+import domain.bomb.*;
 import service.IBombService;
 import ui.components.dialogs.*;
 import ui.manager.IDialogManager;
@@ -13,7 +8,6 @@ import ui.manager.IDisplayManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -88,22 +82,23 @@ public class DialogManagerImpl implements IDialogManager {
             Optional<Bomb> selectedBomb = displayManager.getBombListPanel().getSelectedBomb();
             if (selectedBomb.isPresent()) {
                 Bomb bomb = selectedBomb.get();
-    
+
                 int confirm = JOptionPane.showConfirmDialog(
                         parentFrame,
                         "Are you sure you want to explode this bomb?",
                         "Confirm Explosion",
                         JOptionPane.YES_NO_OPTION);
-    
+
+                bombService.explodeBomb(bomb.getId());
+                displayManager.refreshDisplay();
+
                 if (confirm == JOptionPane.YES_OPTION) {
                     if (bomb instanceof TimedBomb timedBomb) {
                         showCountdownDialog(timedBomb, timedBomb.getId(), timedBomb.getDuration().seconds());
                     } else if (bomb instanceof SmokeBomb smokeBomb) {
-                        showSmokeRadiusDialog(smokeBomb.getId(), smokeBomb.getRadius());
+                        showSmokeRadiusDialog(smokeBomb.getId(), smokeBomb.getRadius().meters());
                     } else if (bomb instanceof RemoteBomb remoteBomb) {
-                        showRemoteBombDialog(remoteBomb.getId(), remoteBomb.getLocation());
-                    } else {
-                        explodeGeneralBomb(bomb);
+                        showRemoteBombDialog(remoteBomb.getId(), remoteBomb.getFrequency());
                     }
                 }
             } else {
@@ -111,115 +106,34 @@ public class DialogManagerImpl implements IDialogManager {
                         parentFrame,
                         "Please select a bomb to explode.",
                         "No Bomb Selected",
-                        JOptionPane.WARNING_MESSAGE
-                );
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
     }
-        
-    // Smoke Bomb Radius Animation
-    private void showSmokeRadiusDialog(String bombId, Distance radius) {
-        JDialog smokeDialog = new JDialog(parentFrame, "Smoke Bomb Effect", true);
-        smokeDialog.setSize(400, 300);
-        smokeDialog.setLocationRelativeTo(parentFrame);
-        smokeDialog.setUndecorated(true);
-    
-        JPanel smokePanel = new JPanel(new BorderLayout());
-        smokePanel.setBackground(Color.BLACK);
-    
-        JLabel smokeLabel = new JLabel("SMOKE!", SwingConstants.CENTER);
-        smokeLabel.setFont(new Font("Arial", Font.BOLD, 72));
-        smokeLabel.setForeground(Color.GRAY);
-    
-        smokePanel.add(smokeLabel, BorderLayout.CENTER);
-        smokeDialog.add(smokePanel);
-    
-        Timer smokeTimer = new Timer(200, new ActionListener() {
-            int frame = 0;
-            final int maxFrames =  10; // Adjust frame duration based on radius
-    
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                smokeLabel.setForeground(new Color(
-                        50 + (frame * 205 / maxFrames), // Gradual lightening of gray
-                        50 + (frame * 205 / maxFrames),
-                        50 + (frame * 205 / maxFrames)
-                ));
-                frame++;
-                if (frame >= maxFrames) {
-                    ((Timer) e.getSource()).stop();
-                    smokeDialog.dispose();
-                    bombService.explodeBomb(bombId);
-                    displayManager.refreshDisplay();
-                }
-            }
-        });
-    
-        smokeDialog.setVisible(true);
-        smokeTimer.start();
-    }
-    
-    // Remote Bomb Location Animation
-    private void showRemoteBombDialog(String bombId, String location) {
-        JDialog remoteDialog = new JDialog(parentFrame, "Remote Bomb Activation", true);
-        remoteDialog.setSize(400, 300);
-        remoteDialog.setLocationRelativeTo(parentFrame);
-        remoteDialog.setUndecorated(true);
-    
-        JPanel remotePanel = new JPanel(new BorderLayout());
-        remotePanel.setBackground(Color.BLACK);
-    
-        JLabel locationLabel = new JLabel("Activating at " + location, SwingConstants.CENTER);
-        locationLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        locationLabel.setForeground(Color.CYAN);
-    
-        JLabel remoteLabel = new JLabel("REMOTE DETONATION", SwingConstants.CENTER);
-        remoteLabel.setFont(new Font("Arial", Font.BOLD, 48));
-        remoteLabel.setForeground(Color.RED);
-    
-        remotePanel.add(locationLabel, BorderLayout.NORTH);
-        remotePanel.add(remoteLabel, BorderLayout.CENTER);
-        remoteDialog.add(remotePanel);
-    
-        Timer remoteTimer = new Timer(500, new ActionListener() {
-            int frame = 0;
-            final Color[] colors = {Color.RED, Color.ORANGE, Color.YELLOW};
-    
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                remoteLabel.setForeground(colors[frame % colors.length]);
-                frame++;
-                if (frame >= 10) { // 5 seconds animation
-                    ((Timer) e.getSource()).stop();
-                    remoteDialog.dispose();
-                    bombService.explodeBomb(bombId);
-                    displayManager.refreshDisplay();
-                }
-            }
-        });
-    
-        remoteDialog.setVisible(true);
-        remoteTimer.start();
-    }
-    
-    // Generic Bomb Explosion
-    private void explodeGeneralBomb(Bomb bomb) {
-        JOptionPane.showMessageDialog(
-                parentFrame,
-                "The bomb has exploded!",
-                "Explosion",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-        bombService.explodeBomb(bomb.getId());
-        displayManager.refreshDisplay();
-    }
-    
 
+    // Smoke Bomb Radius Animation
     @Override
     public void showCountdownDialog(TimedBomb timedBomb, String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
             CountdownDialog dialog = new CountdownDialog(timedBomb, parentFrame, bombService, seconds);
             dialog.start();
+            displayManager.refreshDisplay();
+        });
+    }
+
+    // Smoke Bomb Radius Dialog
+    @Override
+    public void showSmokeRadiusDialog(String bombId, int radius) {
+        SwingUtilities.invokeLater(() -> {
+            SimpleInfoDialog.show(parentFrame, "Smoke Bomb:" + bombId, "Duarr ! Bom ini meledak dalam radius " + radius + " meter");
+        });
+    }
+
+    // Remote Bomb Location Dialog
+    @Override
+    public void showRemoteBombDialog(String bombId, String frequency) {
+        SwingUtilities.invokeLater(() -> {
+            SimpleInfoDialog.show(parentFrame, "Remote Bomb:" + bombId, "Duarr ! Bom ini meledak dalam Frekuensi " + frequency + "Hz");
         });
     }
 }

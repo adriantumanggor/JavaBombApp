@@ -18,13 +18,11 @@ public class AddBombDialog extends JDialog {
         super(parent, "Add New Bomb", true);
         this.bombService = Objects.requireNonNull(bombService);
 
-        // Initialize components
         nameField = new JTextField(20);
         locationField = new JTextField(20);
         typeComboBox = new JComboBox<>(BombType.values());
         specificOptionsPanel = new JPanel(new CardLayout());
 
-        // Setup dialog properties
         setLayout(new BorderLayout(10, 10));
         setSize(400, 400);
         setLocationRelativeTo(parent);

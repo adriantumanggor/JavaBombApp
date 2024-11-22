@@ -19,8 +19,4 @@ public class InMemoryHistoryRepository implements IHistoryRepository {
         return new ArrayList<>(records);
     }
 
-    @Override
-    public void clearHistory() {
-        records.clear();
-    }
 }

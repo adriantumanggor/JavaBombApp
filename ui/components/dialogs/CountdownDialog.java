@@ -17,14 +17,13 @@ public class CountdownDialog {
     private final JLabel countdownLabel;
     private final JLabel warningLabel;
     private final JButton cancelButton;
-    private final IBombService bombService;
     private final TimedBomb timedBomb;
 
 
     public CountdownDialog(TimedBomb timedBomb, JFrame parent, IBombService bombService, int seconds) {
         this.timedBomb = timedBomb;
         this.remainingSeconds = seconds;
-        this.bombService = bombService;
+        // this.bombService = bombService;
         this.remainingSeconds = seconds;
 
         // Initialize dialog
@@ -133,7 +132,7 @@ public class CountdownDialog {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.BLACK);
 
-        JLabel explosionLabel = new JLabel("BOOM!", SwingConstants.CENTER);
+        JLabel explosionLabel = new JLabel("DUARR!", SwingConstants.CENTER);
         explosionLabel.setFont(new Font("Arial", Font.BOLD, 72));
         explosionLabel.setForeground(Color.RED);
 

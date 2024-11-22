@@ -23,12 +23,11 @@ public class ApplicationConfig {
         // Initialize service
         this.bombService = new BombServiceImpl(bombRepository, historyRepository);
 
-        
+         
         // Initialize UI managers
         this.displayManager = new DisplayManagerImpl(bombService);
         this.dialogManager = new DialogManagerImpl(bombService, displayManager);
 
-        // ((InMemoryBombRepository) bombRepository).addListener(() -> displayManager.refreshDisplay());
     }
 
     public IBombService bombService() { return bombService; }
