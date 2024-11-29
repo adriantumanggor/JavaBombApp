@@ -1,7 +1,6 @@
 package ui.components.dialogs;
 
 import java.awt.*;
-import java.sql.Time;
 
 import javax.swing.*;
 
@@ -18,9 +17,10 @@ public class CountdownDialog {
     private final JLabel warningLabel;
     private final JButton cancelButton;
     private final TimedBomb timedBomb;
+    private final IBombService bombService;
 
-
-    public CountdownDialog(TimedBomb timedBomb, JFrame parent, int seconds) {
+    public CountdownDialog(IBombService bombService, TimedBomb timedBomb, JFrame parent, int seconds) {
+        this.bombService = bombService;
         this.timedBomb = timedBomb;
         this.remainingSeconds = seconds;
         this.remainingSeconds = seconds;
@@ -110,12 +110,16 @@ public class CountdownDialog {
         blinkTimer.stop();
         dialog.dispose();
         showExplosionEffect();
+        bombService.explodeBomb(timedBomb.getId());
+
     }
 
     private void cancelCountdown() {
         countdownTimer.stop();
         blinkTimer.stop();
         dialog.dispose();
+        bombService.deactivateBomb(timedBomb.getId());
+
     }
 
     private void toggleWarningLabelVisibility() {
@@ -144,8 +148,8 @@ public class CountdownDialog {
     }
 
     private Timer createExplosionAnimationTimer(JLabel explosionLabel, JDialog explosionDialog) {
-        final int[] frame = {0};
-        final Color[] colors = {Color.RED, Color.ORANGE, Color.YELLOW};
+        final int[] frame = { 0 };
+        final Color[] colors = { Color.RED, Color.ORANGE, Color.YELLOW };
         Timer timer = new Timer(100, e -> {
             explosionLabel.setForeground(colors[frame[0] % colors.length]);
             frame[0]++;
@@ -160,11 +164,10 @@ public class CountdownDialog {
 
     private void showExplosionDescription() {
         JOptionPane.showMessageDialog(
-            dialog,
-            String.format("%s exploded in %s", timedBomb.getName(), timedBomb.getLocation()),
-            "Explosion Details",
-            JOptionPane.INFORMATION_MESSAGE
-        );
+                dialog,
+                String.format("%s exploded in %s", timedBomb.getName(), timedBomb.getLocation()),
+                "Explosion Details",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private String formatTime(int seconds) {

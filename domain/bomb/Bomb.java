@@ -57,5 +57,19 @@ public abstract class Bomb {
         this.active = false;
     }
 
+    public String getCurrentState() {
+        // Example of what the current state could include:
+        return String.format(
+                "Bomb Name: %s " +
+                        "Location: %s " +
+                        "Type: %s " +
+                        "Activated: %s",
+                getName(), // Bomb name
+                getLocation(), // Location of the bomb (inherited from Bomb class)
+                getType(), // Bomb type (should be TIMED for this class)
+                isActive() ? "Yes" : "No" // Check if the bomb is active or not
+        );
+    }
+
     public abstract String explode();
 }

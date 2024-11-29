@@ -99,12 +99,13 @@ public class DialogManagerImpl implements IDialogManager {
                         "Confirm Explosion",
                         JOptionPane.YES_NO_OPTION);
 
-                bombService.explodeBomb(bomb.getId());
-                displayManager.refreshDisplay();
+                        displayManager.refreshDisplay();
+                        
+                        // bombService.explodeBomb(bomb.getId());
 
                 if (confirm == JOptionPane.YES_OPTION) {
                     if (bomb instanceof TimedBomb timedBomb) {
-                        showCountdownDialog(timedBomb, timedBomb.getId(), timedBomb.getDuration().seconds());
+                        showCountdownDialog(bombService, timedBomb, timedBomb.getId(), timedBomb.getDuration().seconds());
                     } else if (bomb instanceof SmokeBomb smokeBomb) {
                         showSmokeRadiusDialog(smokeBomb.getId(), smokeBomb.getRadius().meters());
                     } else if (bomb instanceof RemoteBomb remoteBomb) {
@@ -123,9 +124,9 @@ public class DialogManagerImpl implements IDialogManager {
 
     // Smoke Bomb Radius Animation
     @Override
-    public void showCountdownDialog(TimedBomb timedBomb, String bombId, int seconds) {
+    public void showCountdownDialog(IBombService bombService, TimedBomb timedBomb, String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
-            CountdownDialog dialog = new CountdownDialog(timedBomb, parentFrame, seconds);
+            CountdownDialog dialog = new CountdownDialog(bombService, timedBomb, parentFrame, seconds);
             dialog.start();
             displayManager.refreshDisplay();
         });
@@ -136,7 +137,7 @@ public class DialogManagerImpl implements IDialogManager {
     public void showSmokeRadiusDialog(String bombId, int radius) {
         SwingUtilities.invokeLater(() -> {
             SimpleInfoDialog.show(parentFrame, "Smoke Bomb:" + bombId,
-                    "Duarr ! Bom ini meledak dalam radius " + radius + " meter");
+                    "WUSHH ! Bom ini meledak dalam radius " + radius + " meter");
         });
     }
 
@@ -145,7 +146,7 @@ public class DialogManagerImpl implements IDialogManager {
     public void showRemoteBombDialog(String bombId, String frequency) {
         SwingUtilities.invokeLater(() -> {
             SimpleInfoDialog.show(parentFrame, "Remote Bomb:" + bombId,
-                    "Duarr ! Bom ini meledak dalam Frekuensi " + frequency + "Hz");
+                    "CIJIK DUWAR ! Bom ini meledak dalam Frekuensi " + frequency + "Hz");
         });
     }
 }

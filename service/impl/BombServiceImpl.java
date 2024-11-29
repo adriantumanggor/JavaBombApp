@@ -43,6 +43,11 @@ public class BombServiceImpl implements IBombService {
         Bomb bomb = findBombById(bombId);
         bomb.deactivate();
         bombRepository.save(bomb); // Save the updated state
+        String explosionDetails = bomb.getCurrentState();
+        ExplosionRecord record = new ExplosionRecord(explosionDetails, bomb.getType());
+
+        historyRepository.saveRecord(record);
+
     }
 
     @Override
