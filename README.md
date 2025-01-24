@@ -1,6 +1,6 @@
-# Java OOP Reference
+# Java OOP Bomb Management Simulation
 
-Welcome to the Java OOP Reference repository. This repository contains resources and examples to help you understand Object-Oriented Programming (OOP) concepts in Java.
+Welcome to the Java OOP Bomb Management Simulation repository. This repository contains resources and examples to help you understand Object-Oriented Programming (OOP) concepts in Java through a bomb management simulation application.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ Welcome to the Java OOP Reference repository. This repository contains resources
 
 ## Introduction
 
-This repository is designed to provide a comprehensive guide to OOP in Java. It includes explanations of key concepts, code examples, and best practices.
+This repository is designed to provide a comprehensive guide to OOP in Java using a bomb management simulation application. It includes explanations of key concepts, code examples, and best practices.
 
 ## Getting Started
 
