@@ -1,5 +1,8 @@
 // domain/bomb/RemoteBomb.java
-package domain.bomb;
+package domain.bomb.impl;
+
+import domain.bomb.Bomb;
+import domain.bomb.BombType;
 
 public class RemoteBomb extends Bomb {
     private String frequency;

@@ -1,5 +1,7 @@
-package domain.bomb;
+package domain.bomb.impl;
 
+import domain.bomb.Bomb;
+import domain.bomb.BombType;
 import domain.value.Duration;
 import java.util.Objects;
 

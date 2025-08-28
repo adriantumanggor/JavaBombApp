@@ -1,7 +1,9 @@
 
 // domain/bomb/SmokeBomb.java
-package domain.bomb;
+package domain.bomb.impl;
 
+import domain.bomb.Bomb;
+import domain.bomb.BombType;
 import domain.value.Distance;
 import java.util.Objects;
 

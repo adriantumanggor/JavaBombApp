@@ -1,6 +1,9 @@
 package ui.components.dialogs;
 
 import domain.bomb.*;
+import domain.bomb.impl.RemoteBomb;
+import domain.bomb.impl.SmokeBomb;
+import domain.bomb.impl.TimedBomb;
 import domain.value.*;
 import service.IBombService;
 

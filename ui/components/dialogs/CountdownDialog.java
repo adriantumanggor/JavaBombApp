@@ -4,7 +4,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import domain.bomb.TimedBomb;
+import domain.bomb.impl.TimedBomb;
 import service.IBombService;
 
 public class CountdownDialog {

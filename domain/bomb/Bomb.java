@@ -1,75 +1,90 @@
+/*
+ * Copyright (c) 1997, Oracle and/or its affiliates. All rights reserved.
+ * 
+ * This code follows Java Code Conventions as specified in:
+ * Java Code Conventions, September 12, 1997
+ */
+
 package domain.bomb;
 
-import java.util.Objects;
+import domain.bomb.formatting.BombStateFormatter;
+import domain.bomb.validation.BombValidator;
 import java.util.UUID;
 
+/**
+ * Abstract base class for all bomb types.
+ * 
+ * @author Tumanggors
+ * @version 2.0
+ */
 public abstract class Bomb {
+    
     private final String id;
     private String name;
     private String location;
     private boolean active;
     private final BombType type;
-
+    
+    /**
+     * Constructs a new Bomb.
+     */
     protected Bomb(String name, String location, BombType type) {
         this.id = UUID.randomUUID().toString();
-        setName(name);
-        setLocation(location);
-        this.type = Objects.requireNonNull(type);
+        BombValidator.validateName(name);
+        BombValidator.validateLocation(location);
+        BombValidator.validateType(type);
+        
+        this.name = name;
+        this.location = location;
+        this.type = type;
         this.active = false;
     }
-
-    public String getId() {
-        return id;
+    
+    // Getters
+    public String getId() { 
+        return id; 
     }
-
-    public String getName() {
-        return name;
+    
+    public String getName() { 
+        return name; 
     }
-
+    
     public String getLocation() {
-        return location;
+        return location; 
     }
-
-    public boolean isActive() {
+    
+    public boolean isActive() { 
         return active;
     }
-
-    public BombType getType() {
-        return type;
+    
+    public BombType getType() { 
+        return type; 
     }
-
+    
+    // Setters
     public void setName(String name) {
-        this.name = Objects.requireNonNull(name, "Name cannot be null");
-        if (name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty");
-        }
+        BombValidator.validateName(name);
+        this.name = name;
     }
-
+    
     public void setLocation(String location) {
-        this.location = Objects.requireNonNull(location, "location cannot be null");
+        BombValidator.validateLocation(location);
+        this.location = location;
     }
-
-    public void activate() {
-        this.active = true;
+    
+    // State operations
+    public void activate() { 
+        this.active = true; 
     }
-
-    public void deactivate() {
-        this.active = false;
+    
+    public void deactivate() { 
+        this.active = false; 
     }
-
+    
     public String getCurrentState() {
-        // Example of what the current state could include:
-        return String.format(
-                "Bomb Name: %s " +
-                        "Location: %s " +
-                        "Type: %s " +
-                        "Activated: %s",
-                getName(), // Bomb name
-                getLocation(), // Location of the bomb (inherited from Bomb class)
-                getType(), // Bomb type (should be TIMED for this class)
-                isActive() ? "Yes" : "No" // Check if the bomb is active or not
-        );
+        BombState state = new BombState(name, location, active, type);
+        return BombStateFormatter.formatCurrentState(state);
     }
-
+    
     public abstract String explode();
 }
