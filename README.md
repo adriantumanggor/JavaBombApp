@@ -26,10 +26,10 @@ git clone https://github.com/yourusername/javaoop-reff.git
 
 ## Running the Application
 
-To run the application, navigate to the `/out/application` directory and execute the following command:
+To run the application, navigate to the `/out` directory and execute the following command:
 
 ```bash
-java BombApplication
+java application.BombApplication
 ```
 
 ## Key Concepts
