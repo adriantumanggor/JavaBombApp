@@ -23,6 +23,14 @@ To get started with this repository, clone it to your local machine using the fo
 ```bash
 git clone https://github.com/yourusername/javaoop-reff.git
 ```
+## Compile java files
+To compile all the java files run this command
+
+```bash
+javac -d out application/BombApplication.java
+```
+with input entry point of the application file, java compiler will automatically find and compile all the files
+
 
 ## Running the Application
 
