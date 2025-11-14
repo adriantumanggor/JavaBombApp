@@ -62,7 +62,8 @@ public class BombServiceImpl implements IBombService {
 
         historyRepository.saveRecord(record);
 
-        deactivateBomb(bombId);
+        bomb.deactivate();
+        bombRepository.save(bomb);
     }
 
     @Override
