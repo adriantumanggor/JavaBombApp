@@ -338,66 +338,62 @@ classDiagram
         +explodeSelectedBomb()
     }
 
-    %% Relationships - Application
-    BombApplication --> ApplicationConfig
-    ApplicationConfig --> IBombService
-    ApplicationConfig --> IDisplayManager
-    ApplicationConfig --> IDialogManager
-    ApplicationConfig --> IBombRepository
-    ApplicationConfig --> IHistoryRepository
-
-    %% Relationships - Domain
+    %% INHERITANCE (Triangle arrow)
     Bomb <|-- TimedBomb
     Bomb <|-- SmokeBomb
     Bomb <|-- RemoteBomb
-    Bomb --> BombType
-    Bomb --> BombState
-    Bomb ..> BombValidator
-    BombState --> BombType
-    BombStateFormatter ..> BombState
-    TimedBomb --> Duration
-    SmokeBomb --> Distance
-    ExplosionRecord --> BombType
 
-    %% Relationships - Repository
+    %% REALIZATION / IMPLEMENTATION (Dashed triangle arrow)
     IBombRepository <|.. InMemoryBombRepository
     IHistoryRepository <|.. InMemoryHistoryRepository
-    InMemoryBombRepository ..> Bomb
-    InMemoryHistoryRepository ..> ExplosionRecord
-
-    %% Relationships - Service
     IBombService <|.. BombServiceImpl
-    BombServiceImpl --> IBombRepository
-    BombServiceImpl --> IHistoryRepository
-    BombServiceImpl ..> Bomb
-    BombServiceImpl ..> ExplosionRecord
-
-    %% Relationships - UI Main
-    BombManagementUI --> IBombService
-    BombManagementUI --> IDisplayManager
-    BombManagementUI --> IDialogManager
-
-    %% Relationships - UI Components
-    BombListPanel --> IBombService
-    BombListPanel --> BombListCellRenderer
-    HistoryPanel --> IBombService
-    HistoryPanel --> HistoryListCellRenderer
-    ButtonPanel --> IDialogManager
-
-    %% Relationships - UI Dialogs
-    AddBombDialog --> IBombService
-    EditBombDialog --> IBombService
-    EditBombDialog ..> Bomb
-    CountdownDialog --> IBombService
-    CountdownDialog --> TimedBomb
-
-    %% Relationships - UI Managers
     IDisplayManager <|.. DisplayManagerImpl
     IDialogManager <|.. DialogManagerImpl
-    DisplayManagerImpl --> BombListPanel
-    DisplayManagerImpl --> HistoryPanel
-    DialogManagerImpl --> IBombService
-    DialogManagerImpl --> IDisplayManager
+
+    %% COMPOSITION (Filled diamond)
+    ApplicationConfig *-- IBombRepository
+    ApplicationConfig *-- IHistoryRepository
+    ApplicationConfig *-- IBombService
+    ApplicationConfig *-- IDisplayManager
+    ApplicationConfig *-- IDialogManager
+    BombManagementUI *-- IBombService
+    BombManagementUI *-- IDisplayManager
+    BombManagementUI *-- IDialogManager
+    BombServiceImpl *-- IBombRepository
+    BombServiceImpl *-- IHistoryRepository
+    DisplayManagerImpl *-- BombListPanel
+    DisplayManagerImpl *-- HistoryPanel
+    DialogManagerImpl *-- IBombService
+    DialogManagerImpl *-- IDisplayManager
+    BombListPanel *-- IBombService
+    HistoryPanel *-- IBombService
+    ButtonPanel *-- IDialogManager
+
+    %% AGGREGATION (Hollow diamond)
+    TimedBomb o-- Duration
+    SmokeBomb o-- Distance
+    CountdownDialog o-- TimedBomb
+    CountdownDialog o-- IBombService
+    EditBombDialog o-- Bomb
+    AddBombDialog o-- IBombService
+    EditBombDialog o-- IBombService
+
+    %% ASSOCIATION (Simple arrow)
+    BombApplication --> ApplicationConfig
+    Bomb --> BombType
+    Bomb --> BombState
+    BombState --> BombType
+    ExplosionRecord --> BombType
+    BombListPanel --> BombListCellRenderer
+    HistoryPanel --> HistoryListCellRenderer
+
+    %% DEPENDENCY (Dashed arrow)
+    Bomb ..> BombValidator
+    BombStateFormatter ..> BombState
+    InMemoryBombRepository ..> Bomb
+    InMemoryHistoryRepository ..> ExplosionRecord
+    BombServiceImpl ..> Bomb
+    BombServiceImpl ..> ExplosionRecord
     DialogManagerImpl ..> AddBombDialog
     DialogManagerImpl ..> EditBombDialog
     DialogManagerImpl ..> CountdownDialog
