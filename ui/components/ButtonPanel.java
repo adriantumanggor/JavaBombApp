@@ -7,18 +7,16 @@ import java.awt.*;
 import java.util.Objects;
 
 public class ButtonPanel extends JPanel {
-    private final IBombService bombService;
     private final IDialogManager dialogManager;
 
     public ButtonPanel(IBombService bombService, IDialogManager dialogManager) {
-        this.bombService = Objects.requireNonNull(bombService);
+        Objects.requireNonNull(bombService);
         this.dialogManager = Objects.requireNonNull(dialogManager);
 
         setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
         initializeButtons();
     }
 
-    @SuppressWarnings("unused")
     private void initializeButtons() {
         JButton addButton = new JButton("Tambah Bomb");
         JButton editButton = new JButton("Edit Bomb");

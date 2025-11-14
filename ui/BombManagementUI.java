@@ -1,4 +1,3 @@
-// ui/BombManagementUI.java
 package ui;
 
 import service.IBombService;
@@ -31,7 +30,6 @@ public class BombManagementUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
-        // Add components
         add(displayManager.getBombListPanel(), BorderLayout.CENTER);
         add(displayManager.getHistoryPanel(), BorderLayout.EAST);
         add(new ButtonPanel(bombService, dialogManager), BorderLayout.SOUTH);

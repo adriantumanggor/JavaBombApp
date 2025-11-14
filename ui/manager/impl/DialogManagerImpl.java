@@ -86,7 +86,6 @@ public class DialogManagerImpl implements IDialogManager {
             if (selectedBomb.isPresent()) {
                 Bomb bomb = selectedBomb.get();
 
-                // Pengecekan status aktivasi
                 if (!bomb.isActive()) {
                     JOptionPane.showMessageDialog(
                             parentFrame,
@@ -104,7 +103,6 @@ public class DialogManagerImpl implements IDialogManager {
 
                         displayManager.refreshDisplay();
                         
-                        // bombService.explodeBomb(bomb.getId());
 
                 if (confirm == JOptionPane.YES_OPTION) {
                     if (bomb instanceof TimedBomb timedBomb) {
@@ -125,7 +123,6 @@ public class DialogManagerImpl implements IDialogManager {
         });
     }
 
-    // Smoke Bomb Radius Animation
     @Override
     public void showCountdownDialog(IBombService bombService, TimedBomb timedBomb, String bombId, int seconds) {
         SwingUtilities.invokeLater(() -> {
@@ -135,7 +132,6 @@ public class DialogManagerImpl implements IDialogManager {
         });
     }
 
-    // Smoke Bomb Radius Dialog
     @Override
     public void showSmokeRadiusDialog(String bombId, int radius) {
         SwingUtilities.invokeLater(() -> {
@@ -144,7 +140,6 @@ public class DialogManagerImpl implements IDialogManager {
         });
     }
 
-    // Remote Bomb Location Dialog
     @Override
     public void showRemoteBombDialog(String bombId, String frequency) {
         SwingUtilities.invokeLater(() -> {

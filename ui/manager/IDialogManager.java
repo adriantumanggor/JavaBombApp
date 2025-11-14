@@ -1,7 +1,6 @@
 package ui.manager;
 
 import domain.bomb.impl.TimedBomb;
-import domain.value.Distance;
 import service.IBombService;
 
 public interface IDialogManager {
