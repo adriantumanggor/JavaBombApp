@@ -12,7 +12,6 @@ import java.awt.*;
 import java.util.Objects;
 
 public class EditBombDialog extends JDialog {
-    private final IBombService bombService;
     private final Bomb bomb;
     private final JTextField nameField;
     private final JTextField locationField;
@@ -20,7 +19,7 @@ public class EditBombDialog extends JDialog {
 
     public EditBombDialog(JFrame parent, IBombService bombService, Bomb bomb) {
         super(parent, "Edit Bomb", true);
-        this.bombService = Objects.requireNonNull(bombService);
+        Objects.requireNonNull(bombService);
         this.bomb = Objects.requireNonNull(bomb);
 
         nameField = new JTextField(20);
@@ -36,7 +35,6 @@ public class EditBombDialog extends JDialog {
     }
 
     private void initializeUI() {
-        // Basic info panel
         JPanel basicPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -60,10 +58,8 @@ public class EditBombDialog extends JDialog {
         gbc.gridx = 1;
         basicPanel.add(new JLabel(bomb.getType().getDisplayName()), gbc);
 
-        // Initialize specific options panel
         initializeSpecificOptions();
 
-        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton cancelButton = new JButton("Cancel");
         JButton saveButton = new JButton("Save");
@@ -74,7 +70,6 @@ public class EditBombDialog extends JDialog {
         buttonPanel.add(cancelButton);
         buttonPanel.add(saveButton);
 
-        // Main layout
         add(basicPanel, BorderLayout.NORTH);
         add(specificOptionsPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
