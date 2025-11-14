@@ -4,9 +4,6 @@ import java.util.Objects;
 
 import domain.bomb.BombType;
 
-/**
- * Utility class for bomb data validation.
- */
 public final class BombValidator {
     
     private static final String NAME_NULL_MESSAGE = "Name cannot be null";
@@ -14,7 +11,6 @@ public final class BombValidator {
     private static final String LOCATION_NULL_MESSAGE = "Location cannot be null";
     
     private BombValidator() {
-        // Utility class
     }
     
     public static void validateName(String name) {

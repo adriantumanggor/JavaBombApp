@@ -1,5 +1,3 @@
-
-// domain/bomb/SmokeBomb.java
 package domain.bomb.impl;
 
 import domain.bomb.Bomb;

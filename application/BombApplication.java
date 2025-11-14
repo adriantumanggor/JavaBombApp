@@ -1,4 +1,3 @@
-// application/BombApplication.java
 package application;
 
 import application.config.ApplicationConfig;

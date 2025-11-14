@@ -8,7 +8,6 @@ import domain.bomb.BombState;
 public final class BombStateFormatter {
     
     private BombStateFormatter() {
-        // Utility class
     }
     
     public static String formatCurrentState(BombState state) {

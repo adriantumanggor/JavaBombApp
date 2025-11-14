@@ -30,7 +30,6 @@ public class AddBombDialog extends JDialog {
         setSize(400, 400);
         setLocationRelativeTo(parent);
 
-        // Initialize UI
         initializeUI();
     }
 
@@ -40,24 +39,19 @@ public class AddBombDialog extends JDialog {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Basic info panel
         JPanel basicPanel = createBasicInfoPanel();
         mainPanel.add(basicPanel);
         mainPanel.add(Box.createVerticalStrut(10));
 
-        // Specific options panel
         initializeSpecificOptions();
         mainPanel.add(specificOptionsPanel);
         mainPanel.add(Box.createVerticalStrut(10));
 
-        // Button panel
         JPanel buttonPanel = createButtonPanel();
 
-        // Main layout
         add(new JScrollPane(mainPanel), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add type change listener
         typeComboBox.addActionListener(e -> {
             CardLayout cl = (CardLayout) specificOptionsPanel.getLayout();
             cl.show(specificOptionsPanel, typeComboBox.getSelectedItem().toString());
@@ -71,19 +65,16 @@ public class AddBombDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Name field
         gbc.gridx = 0; gbc.gridy = 0;
         panel.add(new JLabel("Name:"), gbc);
         gbc.gridx = 1; gbc.weightx = 1.0;
         panel.add(nameField, gbc);
 
-        // Location field
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
         panel.add(new JLabel("Location:"), gbc);
         gbc.gridx = 1; gbc.weightx = 1.0;
         panel.add(locationField, gbc);
 
-        // Type combo
         gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0;
         panel.add(new JLabel("Type:"), gbc);
         gbc.gridx = 1; gbc.weightx = 1.0;
@@ -95,19 +86,16 @@ public class AddBombDialog extends JDialog {
     private void initializeSpecificOptions() {
         specificOptionsPanel.setBorder(BorderFactory.createTitledBorder("Specific Options"));
 
-        // Timed bomb options
         JPanel timedPanel = new JPanel(new GridBagLayout());
         JSpinner durationSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 3600, 1));
         addLabelAndComponent(timedPanel, "Duration (seconds):", durationSpinner, 0);
         specificOptionsPanel.add(timedPanel, BombType.TIMED.toString());
 
-        // Smoke bomb options
         JPanel smokePanel = new JPanel(new GridBagLayout());
         JSpinner radiusSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 1000, 1));
         addLabelAndComponent(smokePanel, "Radius (meters):", radiusSpinner, 0);
         specificOptionsPanel.add(smokePanel, BombType.SMOKE.toString());
 
-        // Remote bomb options
         JPanel remotePanel = new JPanel(new GridBagLayout());
         JTextField frequencyField = new JTextField(10);
         addLabelAndComponent(remotePanel, "Frequency:", frequencyField, 0);

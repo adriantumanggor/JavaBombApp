@@ -57,11 +57,9 @@ public class BombServiceImpl implements IBombService {
             throw new IllegalStateException("Cannot explode inactive bomb");
         }
 
-        // Perform the explosion
         String explosionDetails = bomb.explode();
         ExplosionRecord record = new ExplosionRecord(explosionDetails, bomb.getType());
 
-        // Save the explosion history
         historyRepository.saveRecord(record);
 
         deactivateBomb(bombId);

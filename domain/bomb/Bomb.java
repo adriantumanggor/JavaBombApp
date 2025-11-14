@@ -11,12 +11,6 @@ import domain.bomb.formatting.BombStateFormatter;
 import domain.bomb.validation.BombValidator;
 import java.util.UUID;
 
-/**
- * Abstract base class for all bomb types.
- * 
- * @author Tumanggors
- * @version 2.0
- */
 public abstract class Bomb {
     
     private final String id;
@@ -25,9 +19,6 @@ public abstract class Bomb {
     private boolean active;
     private final BombType type;
     
-    /**
-     * Constructs a new Bomb.
-     */
     protected Bomb(String name, String location, BombType type) {
         this.id = UUID.randomUUID().toString();
         BombValidator.validateName(name);
@@ -40,7 +31,6 @@ public abstract class Bomb {
         this.active = false;
     }
     
-    // Getters
     public String getId() { 
         return id; 
     }
@@ -61,7 +51,6 @@ public abstract class Bomb {
         return type; 
     }
     
-    // Setters
     public void setName(String name) {
         BombValidator.validateName(name);
         this.name = name;
@@ -72,7 +61,6 @@ public abstract class Bomb {
         this.location = location;
     }
     
-    // State operations
     public void activate() { 
         this.active = true; 
     }

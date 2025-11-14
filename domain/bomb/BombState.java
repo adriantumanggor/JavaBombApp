@@ -1,8 +1,5 @@
 package domain.bomb;
 
-/**
- * Represents the state of a bomb with immutable data.
- */
 public class BombState {
     private final String name;
     private final String location;

@@ -1,4 +1,3 @@
-// repository/IBombRepository.java
 package repository;
 
 import domain.bomb.Bomb;

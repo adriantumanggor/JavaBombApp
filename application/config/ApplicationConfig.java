@@ -16,15 +16,12 @@ public class ApplicationConfig {
 
 
     public ApplicationConfig() {
-        // Initialize repositories
         this.bombRepository = new InMemoryBombRepository();
         this.historyRepository = new InMemoryHistoryRepository();
         
-        // Initialize service
         this.bombService = new BombServiceImpl(bombRepository, historyRepository);
 
          
-        // Initialize UI managers
         this.displayManager = new DisplayManagerImpl(bombService);
         this.dialogManager = new DialogManagerImpl(bombService, displayManager);
 

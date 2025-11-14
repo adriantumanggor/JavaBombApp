@@ -1,4 +1,3 @@
-// domain/bomb/RemoteBomb.java
 package domain.bomb.impl;
 
 import domain.bomb.Bomb;
